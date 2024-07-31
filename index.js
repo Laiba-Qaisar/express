@@ -23,12 +23,12 @@ app.get("/api/users", (req, res) => {
     query: { filter, value },
   } = req;
   if (!filter || !value) return res.send(mockUsers);
-  if (filter && value)
-    return res.send(
-      mockUsers.filter((users) => {
-        return users[filter].toLowerCase().includes(value.toLowerCase());
-      })
+  if (filter && value) {
+    const filteredquery = mockUsers.filter((users) =>
+      users[filter].includes(value)
     );
+    return res.send(filteredquery);
+  }
 });
 
 //get users based on the id
@@ -54,14 +54,14 @@ app.post("/api/users", (req, res) => {
 app.put("/api/users/:id", (req, res) => {
   const {
     body,
-    params: { id },
-  } = req.body;
+   params: { id },
+  } = req;
   const parsedId = parseInt(req.params.id);
   if (isNaN(parsedId)) return res.status(404).send("Invalid Id-");
   const finduserID = mockUsers.find((user) => user.id === parsedId);
-  if (finduserID === -1) return res.status(404);
-  mockUsers[finduserID] = { ...body, id: parsedId };
-  return res.status(200).send("user updated");
+
+  mockUsers[finduserID] = { id: parsedId, ...body };
+  return res.status(200);
 });
 
 //patch request
